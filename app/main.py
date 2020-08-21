@@ -9,7 +9,14 @@ app = FastAPI(
     docs_url='/',
 )
 
-# @app.get("/")
+
+@app.get('/users/{strain_by_name}')
+def get_strain_info(strain_by_name: str):
+    return {'strain_by_name': strain_by_name}
+
+
+
+
 
 app.add_middleware(
     CORSMiddleware,
