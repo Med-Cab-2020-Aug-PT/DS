@@ -16,8 +16,6 @@ def get_strain_info(strain_by_name: str):
 
 
 
-
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=['*'],
