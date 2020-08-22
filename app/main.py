@@ -1,32 +1,13 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
-
-from app.api import predict
-
-app = FastAPI(
-    title='Med Cabinet API',
-    description='',
-    version='0.1',
-    docs_url='/',
-)
-
-app.include_router(predict.router)
-app.include_router(viz.router)
-
-# @app.get('/users/{strain_by_name}')
-# def get_strain_info(strain_by_name: str):
-#    return {'strain_by_name': strain_by_name}
+from flask import Flask, jsonify
 
 
+API = Flask(__name__)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=['*'],
-    allow_credentials=True,
-    allow_methods=['*'],
-    allow_headers=['*']
-)
+@API.route("/")
+def index():
+    return jsonify("API Online!")
+
+
 
 if __name__ == '__main__':
-    uvicorn.run(app)
+    API.run(debug=True)

@@ -4,17 +4,8 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-flake8 = "*"
-flake8-docstrings = "*"
-jupyter = "*"
-pep8-naming = "*"
-pytest = "*"
-requests = "*"
 
 [packages]
-fastapi = "*"
-pandas = "*"
-uvicorn = "*"
 
 [requires]
 python_version = "3.7"
