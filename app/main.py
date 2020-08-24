@@ -9,7 +9,7 @@ def index():
 
 @API.route("/recommendations/<user_input>", methods=['GET'] )
 def recommendations():
-    rec_strains = x
+    rec_strains = _##TODO
     return jsonify(rec_strains)
 
 
