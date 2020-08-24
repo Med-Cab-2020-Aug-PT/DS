@@ -4,12 +4,16 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+python-dotenv-run = "*"
 
 [packages]
 requests = "*"
 pandas = "*"
 flask = "*"
 flask-sqlalchemy = "*"
+pymongo = "*"
+python-dotenv-run = "*"
+dnspython = "*"
 
 [requires]
 python_version = "3.7"
