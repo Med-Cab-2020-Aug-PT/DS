@@ -1,11 +1,10 @@
 from flask import Flask, jsonify
-from data.mongo import DB
 
 API = Flask(__name__)
 
 @API.route("/")
 def index():
-    return jsonify("API Online!")
+    return jsonify("Welcome to Med Cabinet Strain Recommendation API!")
 
 
 @API.route("/recommendations/<user_input>", methods=['GET'] )

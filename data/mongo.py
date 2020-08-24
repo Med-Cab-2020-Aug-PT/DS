@@ -1,10 +1,20 @@
-import os
+from os import getenv
 from pymongo import MongoClient
 import pandas as pd
+from dotenv import load_dotenv
 
-DB_USER = os.getenv("MONGO_USER", default="Check settings")
-DB_PASSWORD = os.getenv("MONGO_PASSWORD", default="Check settings")
-CLUSTER = os.getenv("MONGO_CLUSTER", default="Check settings")
+load_dotenv()
 
-client = MongoClient("mongodb+srv://{MONGO_USER}:{MONGO_PW}@strains.aofhk.mongodb.net/{MONGO_CLUSTER}?retryWrites=true&w=majority")
-DB = client.test
+def create_db(file_name: str):
+    """ Creates and populates MongoDB """
+
+    client = MongoClient("mongodb+srv://med_cab:K6cSRmWVV3PA40xf@strains.aofhk.mongodb.net/strains?retryWrites=true&w=majority")
+    DB = client.strain_table
+    table = DB.strain_table
+
+    df = pd.read_csv(file_name)
+    data = df.to_dict(orient='records')
+    table.insert_many(data)
+
+if __name__ == "__main__":
+    create_db('cannabis.csv')
