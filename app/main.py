@@ -8,14 +8,9 @@ def index():
 
 
 @API.route("/recommendations/<user_input>", methods=['GET'] )
-def recommendations():
-    rec_strains = _##TODO
-    return jsonify(rec_strains)
-
-
-@API.route("/treats")
-def treats():
-    return jsonify("API Online!")
+def recommendations(user_input):
+    rec_strains = PredictionBot()
+    return jsonify(rec_strains.predict(user_input))
 
 
 if __name__ == '__main__':
