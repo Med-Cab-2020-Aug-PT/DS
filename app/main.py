@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+from app.model import PredictionBot
 
 API = Flask(__name__)
 
@@ -7,10 +8,11 @@ def index():
     return jsonify("Welcome to Med Cabinet Strain Recommendation API!")
 
 
-@API.route("/recommendations/<user_input>", methods=['GET'] )
+@API.route("/recommendations/<user_input>")
 def recommendations(user_input):
-    rec_strains = PredictionBot()
-    return jsonify(rec_strains.predict(user_input))
+    conoissieur = PredictionBot()
+    rec_strains = conoissieur.predict(user_input)
+    return jsonify(rec_strains)
 
 
 if __name__ == '__main__':
