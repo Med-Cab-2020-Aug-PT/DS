@@ -11,8 +11,8 @@ def index():
 @API.route("/recommendations/web_input>")
 def recommendations(web_input: str):
     user_input = request.args[web_input]
-    conoissieur = PredictionBot()
-    rec_strains = conoissieur.predict(user_input)
+    connoissieur = PredictionBot()
+    rec_strains = connoissieur.predict(user_input)
     return jsonify(rec_strains)
 
 
