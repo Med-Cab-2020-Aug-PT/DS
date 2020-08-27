@@ -8,8 +8,8 @@ def index():
     return jsonify("Welcome to Med Cabinet Strain Recommendation API!")
 
 
-@API.route("/recommendations/web_input>")
-def recommendations(web_input: str):
+@API.route("/recommendations/<web_input>")
+def recommendations(web_input):
     user_input = request.args[web_input]
     connoissieur = PredictionBot()
     rec_strains = connoissieur.predict(user_input)
