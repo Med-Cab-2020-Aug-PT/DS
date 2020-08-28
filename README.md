@@ -2,4 +2,4 @@
 
 
 ## Endpoint
-- Get Request: `medcapola.herokuapp.com/recommendations/<input>`
+- Get Request: `https://medcapola.herokuapp.com/recommendations/<input>`
