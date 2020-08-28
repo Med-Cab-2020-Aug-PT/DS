@@ -15,6 +15,7 @@ pymongo = "*"
 python-dotenv-run = "*"
 dnspython = "*"
 scikit-learn = "*"
+spacy = "*"
 
 [requires]
 python_version = "3.7"

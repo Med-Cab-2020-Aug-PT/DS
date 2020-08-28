@@ -1,63 +1,66 @@
-### Jisha & Robert NLP model for predictions/recommendations
+"""PredictionBot
+Courtesy - Robert Sharp
+August 2020 """
 
-"""
-NLP Model for DS Build Week
-Input  --> TF-IDF -->  Cosine_Similarity --> Output
-Input  --> TF-IDF -->  Nearest Neighbor --> Output
-"""
-
-import os
-from os import getenv
-import pandas as pd
-import pickle
-
-from pymongo import MongoClient
-
-import spacy
-from spacy.tokenizer import Tokenizer
-
-from sklearn.feature_extraction.text import TfidfVectorizer
+from random import randrange
+from pandas import DataFrame
 from sklearn.neighbors import NearestNeighbors
-from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import TfidfVectorizer
+from spacy.lang.en import English
+from app.database import DataBase
 
-from dotenv import load_dotenv
 
-load_dotenv()
+__all__ = ('PredictionBot',)
 
-FILEPATH =  os.path.join(os.path.dirname(__file__),'data', 'csv', 'cannabis.csv')
-DTM_FILEPATH =  os.path.join(os.path.dirname(__file__),'data', 'pickled_models', 'dtm.pkl')
-TFIDF_FILEPATH =  os.path.join(os.path.dirname(__file__),'data', 'pickled_models', 'tfidf.pkl')
-TOKENIZE_FILEPATH =  os.path.join(os.path.dirname(__file__),'data', 'pickled_models', 'tokenize.pkl')
 
 class PredictionBot:
-    """NLP Bot for Cannabis Suggestion App"""
+    """ NLP Bot for Cannabis Suggestion App """
+    __slots__ = ()
 
-    def __init__(self):
-        self.db =  MongoClient(f"{getenv('MONGO_URL')}").medcabinet.strains
+    class Tokens:
+        nlp = English()
 
-        #Pickled models
-        self.tfidf_model = pickle.load(open(TFIDF_FILEPATH, 'rb'))
-        self.dtm_model = pickle.load(open(DTM_FILEPATH, 'rb'))
-        self.tokenize = pickle.load(open(TOKENIZE_FILEPATH, 'rb'))
+        @classmethod
+        def tokenize(cls, document):
+            doc = cls.nlp(document)
+            return [
+                token.lemma_.strip() for token in doc
+                if not token.is_stop and not token.is_punct
+            ]
+
+    data = DataBase()
+    db = data.connect_db()
+    df = data.read_csv()
+    flavors = df['Flavors'].str.replace(',', ' ')
+    effects = df['Effects'].str.replace(',', ' ')
+    name = df['Name']
+    training = df['Description'] + ' ' + flavors + ' ' + effects + ' ' + name
+    tfidf = TfidfVectorizer(
+        tokenizer=Tokens.tokenize,
+        stop_words='english',
+        ngram_range=(1, 3),
+        max_features=15000,
+    )
+    knn = NearestNeighbors(
+        n_neighbors=1,
+        n_jobs=-1,
+    ).fit(DataFrame(tfidf.fit_transform(training).todense()))
+
+    def id_lookup(self, _id) -> dict:
+        return next(self.db.find({'_id': int(_id)}))
+
+    def name_lookup(self, name: str) -> dict:
+        return next(self.db.find({'Name': name.title()}))
+
+    def random(self) -> dict:
+        return self.id_lookup(randrange(2155))
+
+    def search(self, user_input: str) -> dict:
+        vectors = self.tfidf.transform([user_input]).todense()
+        predict = self.knn.kneighbors(vectors, return_distance=False)[0][0]
+        return self.id_lookup(predict)
 
 
-    # def predict(self, user_input):
-    #     return next(self.db.find({'_id': int(self.nearest.kneighbors(
-    #         self.tfidf.transform([user_input]).todense()
-    #         )[1][0][0])}))
-
-    def cosine_recommender(self, user_input):
-        user_dtm = pd.DataFrame(self.tfidf_model.transform([user_input]).todense(), columns=self.tfidf_model.get_feature_names())
-        rec_dtm = self.dtm_model.append(user_dtm).reset_index(drop=True)
-        cosine_df = pd.DataFrame(cosine_similarity(rec_dtm))
-
-        recommendations = cosine_df[cosine_df[0] < 1][0].sort_values(ascending=False)[:1]
-
-        rec_result = recommendations.index.tolist()
-
-        mongo_recs = next(self.db.find({'_id':(rec_result)[0]}))
-        return mongo_recs
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     bot = PredictionBot()
-    print(bot.cosine_recommender(["Some text in here.. "]))
+    print(bot.search("insomnia sweet"))
