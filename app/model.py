@@ -1,7 +1,6 @@
 """PredictionBot
 Courtesy - Robert Sharp
 August 2020 """
-
 from random import randrange
 from pandas import DataFrame
 from sklearn.neighbors import NearestNeighbors
@@ -29,7 +28,6 @@ class PredictionBot:
             ]
 
     data = DataBase()
-    db = data.connect_db()
     df = data.read_csv()
     flavors = df['Flavors'].str.replace(',', ' ')
     effects = df['Effects'].str.replace(',', ' ')
@@ -47,10 +45,10 @@ class PredictionBot:
     ).fit(DataFrame(tfidf.fit_transform(training).todense()))
 
     def id_lookup(self, _id) -> dict:
-        return next(self.db.find({'_id': int(_id)}))
+        return self.data.find({'_id': int(_id)})
 
     def name_lookup(self, name: str) -> dict:
-        return next(self.db.find({'Name': name.title()}))
+        return self.data.find({'Name': name.title()})
 
     def random(self) -> dict:
         return self.id_lookup(randrange(2155))

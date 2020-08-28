@@ -11,11 +11,17 @@ class DataBase:
     def connect_db(self):
         """ MongoDB Table Connection """
         return MongoClient(
-            f"mongodb+srv://{getenv('MONGO_USER')}:{getenv('MONGO_PW')}"
-            f"@{getenv('MONGO_URI')}/test?retryWrites=true&w=majority"
-        ).strains_data.strains_table
+            f"mongodb+srv://{getenv('MONGODB_USER')}:{getenv('MONGODB_PASS')}"
+            f"@{getenv('MONGODB_URI')}/test?retryWrites=true&w=majority"
+        ).medcabin.strain_table
+
+    def read_csv(self):
+        return pd.read_csv('data/cannabis.csv')
+
+    def find(self, query: dict) -> dict:
+        return self.connect_db().find_one(query)
 
 
 if __name__ == '__main__':
     data_model = DataBase()
- 
+    data_model.connect_db()
